@@ -28,4 +28,26 @@ public class HomeController {
 		// ログイン画面にリダイレクト
 		return "redirect:/login";
 	}
+
+	/**
+	 * ユーザー管理画面を表示
+	 *
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/userList")
+	public String getUserList(Model model) {
+		model.addAttribute("contents", "login/userList :: userList_contents");
+
+		model.addAttribute("userList", userService.selectMany());
+		model.addAttribute("userListCount", userService.count());
+
+		return "login/homeLayout";
+	}
+
+	@GetMapping("/userList/csv")
+	public String getUserListCsv(Model model) {
+		return getUserList(model);
+	}
+
 }

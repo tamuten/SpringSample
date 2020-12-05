@@ -3,6 +3,8 @@ package com.example.demo.login.controller;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,9 +14,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.demo.login.domain.model.SignupForm;
+import com.example.demo.login.domain.model.User;
+import com.example.demo.login.domain.service.UserService;
 
 @Controller
 public class SignupController {
+
+	@Autowired
+	UserService userService;
+
+	private static final String ROLE_GENERAL = "ROLE_GENERAL";
 
 	// ラジオボタンの実装
 	private Map<String, String> radioMarriage;
@@ -62,8 +71,25 @@ public class SignupController {
 
 		System.out.println(form);
 
+		boolean insertResult = userService.insert(createUserBean(form));
+
+		if (insertResult) {
+			System.out.println("insert成功");
+		} else {
+			System.out.println("Insert失敗");
+		}
+
 		// login.htmlにリダイレクト
 		return "redirect:/login";
+	}
+
+	private User createUserBean(SignupForm form) {
+		User user = new User();
+		BeanUtils.copyProperties(form, user);
+		user.setRole(ROLE_GENERAL);
+
+		return user;
+
 	}
 
 }

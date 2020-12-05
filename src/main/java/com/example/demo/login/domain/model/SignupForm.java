@@ -36,7 +36,7 @@ public class SignupForm {
 
 	@Min(20)
 	@Max(100)
-	private int age;
+	private Integer age;
 
 	//falseのみ可能
 	@AssertFalse
