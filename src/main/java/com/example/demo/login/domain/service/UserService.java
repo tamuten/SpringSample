@@ -21,13 +21,7 @@ public class UserService {
 	 */
 	public boolean insert(User user) {
 		int rowNumber = dao.insertOne(user);
-		boolean result = false;
-
-		if (rowNumber > 0) {
-			result = true;
-		}
-
-		return result;
+		return rowNumber > 0;
 	}
 
 	/**
@@ -56,5 +50,10 @@ public class UserService {
 	 */
 	public User selectOne(String userId) {
 		return dao.selectOne(userId);
+	}
+
+	public boolean updateOne(User user) {
+		int rowNumber = dao.updateOne(user);
+		return rowNumber > 0;
 	}
 }

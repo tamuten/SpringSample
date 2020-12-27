@@ -42,7 +42,11 @@ public class HomeController {
 		return "login/homeLayout";
 	}
 
-	// ログアウト用メソッド
+	/**
+	 * ログアウトする
+	 *
+	 * @return
+	 */
 	@PostMapping("/logout")
 	public String postLogout() {
 		// ログイン画面にリダイレクト
@@ -65,6 +69,14 @@ public class HomeController {
 		return "login/homeLayout";
 	}
 
+	/**
+	 * ユーザー詳細画面を表示
+	 *
+	 * @param form
+	 * @param model
+	 * @param userId
+	 * @return
+	 */
 	@GetMapping("/userDetail/{id:.+}")
 	public String getUserDetail(@ModelAttribute SignupForm form, Model model, @PathVariable("id") String userId) {
 		System.out.println("userId = " + userId);
@@ -86,6 +98,30 @@ public class HomeController {
 
 	@GetMapping("/userList/csv")
 	public String getUserListCsv(Model model) {
+		return getUserList(model);
+	}
+
+	/**
+	 * ユーザー更新処理
+	 *
+	 * @param form
+	 * @param model
+	 * @return
+	 */
+	@PostMapping(value = "/userDetail", params = "update")
+	public String postUserDetailUpdate(@ModelAttribute SignupForm form, Model model) {
+		System.out.println("更新ボタンの処理");
+		User user = new User();
+
+		BeanUtils.copyProperties(form, user);
+
+		boolean result = userService.updateOne(user);
+		if (result) {
+			model.addAttribute("result", "更新成功");
+		} else {
+			model.addAttribute("result", "更新失敗");
+		}
+
 		return getUserList(model);
 	}
 

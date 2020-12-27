@@ -35,7 +35,7 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public int insertOne(User user) throws DataAccessException {
-		return jdbcTemplate.update(createInsertOneSqlString(), createInsertOneParam(user));
+		return jdbcTemplate.update(createInsertOneSql(), createInsertOneParam(user));
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class UserDaoJdbcImpl implements UserDao {
 	 *
 	 * @return SQL
 	 */
-	private String createInsertOneSqlString() {
+	private String createInsertOneSql() {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("INSERT INTO m_user(user_id,")
@@ -119,7 +119,35 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public int updateOne(User user) throws DataAccessException {
-		return 0;
+		return jdbcTemplate.update(createUpdateSql(), createUpdateParam(user));
+	}
+
+	private String createUpdateSql() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("UPDATE m_user")
+				.append(" SET")
+				.append(" password = ?,")
+				.append(" user_name = ?,")
+				.append(" birthday = ?,")
+				.append(" age = ?,")
+				.append(" marriage = ?")
+				.append(" WHERE user_id = ?");
+
+		return sb.toString();
+	}
+
+	private Object[] createUpdateParam(User user) {
+		List<Object> param = new ArrayList<>();
+
+		param.add(user.getPassword());
+		param.add(user.getUserName());
+		param.add(user.getBirthday());
+		param.add(user.getAge());
+		param.add(user.isMarriage());
+		param.add(user.getUserId());
+
+		return param.toArray();
 	}
 
 	@Override
