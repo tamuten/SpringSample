@@ -47,4 +47,14 @@ public class UserService {
 	public List<User> selectMany() {
 		return dao.selectMany();
 	}
+
+	/**
+	 * ユーザーIDに紐づくユーザーを取得
+	 *
+	 * @param userId ユーザーID
+	 * @return ユーザー
+	 */
+	public User selectOne(String userId) {
+		return dao.selectOne(userId);
+	}
 }

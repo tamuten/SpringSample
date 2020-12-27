@@ -25,6 +25,9 @@ public class UserDaoJdbcImpl implements UserDao {
 	/** 全件取得SQL */
 	private static final String SELECT_ALL = "SELECT * FROM m_user";
 
+	/** 1件取得SQL */
+	private static final String SELECT_ONE_BY_USERID = "SELECT * FROM m_user WHERE user_id = ?";
+
 	@Override
 	public int count() throws DataAccessException {
 		return jdbcTemplate.queryForObject(COUNT_SQL, Integer.class);
@@ -77,7 +80,9 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public User selectOne(String userId) throws DataAccessException {
-		return null;
+		Map<String, Object> queryResult = jdbcTemplate.queryForMap(SELECT_ONE_BY_USERID, userId);
+
+		return generateUser(queryResult);
 	}
 
 	@Override
@@ -86,7 +91,7 @@ public class UserDaoJdbcImpl implements UserDao {
 
 		List<User> userList = new ArrayList<>();
 		for (Map<String, Object> resultMap : getList) {
-			userList.add(createUser(resultMap));
+			userList.add(generateUser(resultMap));
 		}
 
 		return userList;
@@ -98,7 +103,7 @@ public class UserDaoJdbcImpl implements UserDao {
 	 * @param resultMap 取得結果Map
 	 * @return ユーザー
 	 */
-	private User createUser(Map<String, Object> resultMap) {
+	private User generateUser(Map<String, Object> resultMap) {
 		User user = new User();
 
 		user.setUserId((String) resultMap.get("user_id"));
