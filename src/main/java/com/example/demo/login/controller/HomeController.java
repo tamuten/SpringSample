@@ -1,10 +1,14 @@
 package com.example.demo.login.controller;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -95,9 +99,30 @@ public class HomeController {
 		return "login/homeLayout";
 	}
 
+	/**
+	 * ユーザーCSV取得
+	 *
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("/userList/csv")
-	public String getUserListCsv(Model model) {
-		return getUserList(model);
+	public ResponseEntity<byte[]> getUserListCsv(Model model) {
+
+		userService.userCsvOut();
+
+		byte[] bytes = null;
+
+		try {
+			bytes = userService.getFile("sample.csv");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		HttpHeaders header = new HttpHeaders();
+		header.add("Content-type", "text/csv; charset=UTF-8");
+		header.setContentDispositionFormData("filename", "sample.csv");
+
+		return new ResponseEntity<>(bytes, header, HttpStatus.OK);
 	}
 
 	/**

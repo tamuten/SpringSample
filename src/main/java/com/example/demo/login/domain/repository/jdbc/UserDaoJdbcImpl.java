@@ -159,7 +159,8 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public void userCsvOut() throws DataAccessException {
-
+		UserRowCallbackHandler handler = new UserRowCallbackHandler();
+		jdbcTemplate.query(SELECT_ALL, handler);
 	}
 
 }
