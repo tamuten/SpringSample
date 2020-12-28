@@ -28,6 +28,8 @@ public class UserDaoJdbcImpl implements UserDao {
 	/** 1件取得SQL */
 	private static final String SELECT_ONE_BY_USERID = "SELECT * FROM m_user WHERE user_id = ?";
 
+	private static final String DELETE_ONE = "DELETE FROM m_user WHERE user_id = ?";
+
 	@Override
 	public int count() throws DataAccessException {
 		return jdbcTemplate.queryForObject(COUNT_SQL, Integer.class);
@@ -152,7 +154,7 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public int deleteOne(String userId) throws DataAccessException {
-		return 0;
+		return jdbcTemplate.update(DELETE_ONE, userId);
 	}
 
 	@Override

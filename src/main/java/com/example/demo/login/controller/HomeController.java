@@ -49,7 +49,6 @@ public class HomeController {
 	 */
 	@PostMapping("/logout")
 	public String postLogout() {
-		// ログイン画面にリダイレクト
 		return "redirect:/login";
 	}
 
@@ -120,6 +119,28 @@ public class HomeController {
 			model.addAttribute("result", "更新成功");
 		} else {
 			model.addAttribute("result", "更新失敗");
+		}
+
+		return getUserList(model);
+	}
+
+	/**
+	 * ユーザー削除処理
+	 *
+	 * @param form
+	 * @param model
+	 * @return
+	 */
+	@PostMapping(value = "/userDetail", params = "delete")
+	public String postUserDetailDelete(@ModelAttribute SignupForm form, Model model) {
+
+		System.out.println("削除ボタンの処理");
+
+		boolean result = userService.deleteOne(form.getUserId());
+		if (result) {
+			model.addAttribute("result", "削除成功");
+		} else {
+			model.addAttribute("result", "削除失敗");
 		}
 
 		return getUserList(model);
