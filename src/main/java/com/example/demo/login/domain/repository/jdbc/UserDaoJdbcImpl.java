@@ -13,20 +13,20 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.login.domain.model.User;
 import com.example.demo.login.domain.repository.UserDao;
 
-@Repository
+@Repository("UserDaoJdbcImpl")
 public class UserDaoJdbcImpl implements UserDao {
 
 	@Autowired
-	JdbcTemplate jdbcTemplate;
+	protected JdbcTemplate jdbcTemplate;
 
 	/** 件数取得SQL */
 	private static final String COUNT_SQL = "SELECT count(*) FROM m_user";
 
 	/** 全件取得SQL */
-	private static final String SELECT_ALL = "SELECT * FROM m_user";
+	protected static final String SELECT_ALL = "SELECT * FROM m_user";
 
 	/** 1件取得SQL */
-	private static final String SELECT_ONE_BY_USERID = "SELECT * FROM m_user WHERE user_id = ?";
+	protected static final String SELECT_ONE_BY_USERID = "SELECT * FROM m_user WHERE user_id = ?";
 
 	private static final String DELETE_ONE = "DELETE FROM m_user WHERE user_id = ?";
 
