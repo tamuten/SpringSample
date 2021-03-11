@@ -121,7 +121,13 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public int updateOne(User user) throws DataAccessException {
-		return jdbcTemplate.update(createUpdateSql(), createUpdateParam(user));
+		int rowNumber = jdbcTemplate.update(createUpdateSql(), createUpdateParam(user));
+		//		if (rowNumber > 0) {
+		//			throw new DataAccessException("トランザクションテスト") {
+		//			};
+		//		}
+
+		return rowNumber;
 	}
 
 	private String createUpdateSql() {

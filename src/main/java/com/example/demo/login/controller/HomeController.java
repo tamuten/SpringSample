@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -139,11 +140,15 @@ public class HomeController {
 
 		BeanUtils.copyProperties(form, user);
 
-		boolean result = userService.updateOne(user);
-		if (result) {
-			model.addAttribute("result", "更新成功");
-		} else {
-			model.addAttribute("result", "更新失敗");
+		try {
+			boolean result = userService.updateOne(user);
+			if (result) {
+				model.addAttribute("result", "更新成功");
+			} else {
+				model.addAttribute("result", "更新失敗");
+			}
+		} catch (DataAccessException e) {
+			model.addAttribute("result", "更新失敗（トランザクションテスト）");
 		}
 
 		return getUserList(model);
