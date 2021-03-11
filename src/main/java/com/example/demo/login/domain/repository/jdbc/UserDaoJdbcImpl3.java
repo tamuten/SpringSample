@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.login.domain.model.User;
+import com.example.demo.login.util.JdbcUtil;
 
 @Repository("UserDaoJdbcImpl3")
 public class UserDaoJdbcImpl3 extends UserDaoJdbcImpl {
@@ -20,8 +21,9 @@ public class UserDaoJdbcImpl3 extends UserDaoJdbcImpl {
 
 	@Override
 	public List<User> selectMany() throws DataAccessException {
+		String sql = JdbcUtil.createSqlString("countUser.sql");
 		RowMapper<User> rowMapper = new BeanPropertyRowMapper<>(User.class);
-		return jdbcTemplate.query(SELECT_ALL, rowMapper);
+		return jdbcTemplate.query(sql, rowMapper);
 	}
 
 }

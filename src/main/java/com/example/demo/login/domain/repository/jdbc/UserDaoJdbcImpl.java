@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.login.domain.model.User;
 import com.example.demo.login.domain.repository.UserDao;
+import com.example.demo.login.util.JdbcUtil;
 
 @Repository("UserDaoJdbcImpl")
 public class UserDaoJdbcImpl implements UserDao {
@@ -19,20 +20,16 @@ public class UserDaoJdbcImpl implements UserDao {
 	@Autowired
 	protected JdbcTemplate jdbcTemplate;
 
-	/** 件数取得SQL */
-	private static final String COUNT_SQL = "SELECT count(*) FROM m_user";
-
 	/** 全件取得SQL */
 	protected static final String SELECT_ALL = "SELECT * FROM m_user";
 
 	/** 1件取得SQL */
 	protected static final String SELECT_ONE_BY_USERID = "SELECT * FROM m_user WHERE user_id = ?";
 
-	private static final String DELETE_ONE = "DELETE FROM m_user WHERE user_id = ?";
-
 	@Override
 	public int count() throws DataAccessException {
-		return jdbcTemplate.queryForObject(COUNT_SQL, Integer.class);
+		String sql = JdbcUtil.createSqlString("countUser.sql");
+		return jdbcTemplate.queryForObject(sql, Integer.class);
 	}
 
 	@Override
@@ -89,7 +86,8 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public List<User> selectMany() throws DataAccessException {
-		List<Map<String, Object>> getList = jdbcTemplate.queryForList(SELECT_ALL);
+		String sql = JdbcUtil.createSqlString("findAll.sql");
+		List<Map<String, Object>> getList = jdbcTemplate.queryForList(sql);
 
 		List<User> userList = new ArrayList<>();
 		for (Map<String, Object> resultMap : getList) {
@@ -160,13 +158,15 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public int deleteOne(String userId) throws DataAccessException {
-		return jdbcTemplate.update(DELETE_ONE, userId);
+		String sql = JdbcUtil.createSqlString("deleteOne.sql");
+		return jdbcTemplate.update(sql, userId);
 	}
 
 	@Override
 	public void userCsvOut() throws DataAccessException {
+		String sql = JdbcUtil.createSqlString("findAll.sql");
 		UserRowCallbackHandler handler = new UserRowCallbackHandler();
-		jdbcTemplate.query(SELECT_ALL, handler);
+		jdbcTemplate.query(sql, handler);
 	}
 
 }
