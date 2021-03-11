@@ -5,6 +5,6 @@ set
     user_name = :userName,
     birthday = :birthday,
     age = :age,
-    marriage = :marriage,
+    marriage = :marriage
 where
     user_id = :userId

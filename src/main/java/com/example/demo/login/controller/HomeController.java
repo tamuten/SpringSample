@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -88,7 +88,7 @@ public class HomeController {
 		radioMarriage = initRadioMarriage();
 		model.addAttribute("radioMarriage", radioMarriage);
 
-		if (!StringUtils.isEmpty(userId)) {
+		if (StringUtils.isNotEmpty(userId)) {
 			User user = userService.selectOne(userId);
 
 			BeanUtils.copyProperties(user, form);

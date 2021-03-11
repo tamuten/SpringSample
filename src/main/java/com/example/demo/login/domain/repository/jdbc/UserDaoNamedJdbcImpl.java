@@ -1,17 +1,10 @@
 package com.example.demo.login.domain.repository.jdbc;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.login.domain.model.User;
 import com.example.demo.login.domain.repository.UserDao;
+import com.example.demo.login.util.JdbcUtil;
 
 @Repository("UserDaoNamedJdbcImpl")
 public class UserDaoNamedJdbcImpl implements UserDao {
@@ -28,16 +22,21 @@ public class UserDaoNamedJdbcImpl implements UserDao {
 
 	@Override
 	public int count() throws DataAccessException {
+		String sql = JdbcUtil.createSqlString("countUser.sql");
 		SqlParameterSource params = new MapSqlParameterSource();
-		return namedJdbcTemplate.queryForObject(readSqlfile("countUser.sql"), params, Integer.class);
+
+		return namedJdbcTemplate.queryForObject(sql, params, Integer.class);
 	}
 
 	@Override
 	public int insertOne(User user) throws DataAccessException {
-		return namedJdbcTemplate.update(readSqlfile("namedInsertOne.sql"), createInsertParameter(user));
+		String sql = JdbcUtil.createSqlString("namedInsertOne.sql");
+		SqlParameterSource params = getInsertParam(user);
+
+		return namedJdbcTemplate.update(sql, params);
 	}
 
-	private SqlParameterSource createInsertParameter(User user) {
+	private SqlParameterSource getInsertParam(User user) {
 		return new MapSqlParameterSource()
 				.addValue("userId", user.getUserId())
 				.addValue("password", user.getPassword())
@@ -50,74 +49,53 @@ public class UserDaoNamedJdbcImpl implements UserDao {
 
 	@Override
 	public User selectOne(String userId) throws DataAccessException {
+		String sql = JdbcUtil.createSqlString("namedSelectOne.sql");
 		SqlParameterSource params = new MapSqlParameterSource()
 				.addValue("userId", userId);
-		Map<String, Object> resultMap = namedJdbcTemplate.queryForMap(readSqlfile("namedSelectOne.sql"), params);
-		return generateUser(resultMap);
-	}
+		RowMapper<User> rowMapper = new UserRowMapper();
 
-	private User generateUser(Map<String, Object> resultMap) {
-		User user = new User();
-
-		user.setUserId((String) resultMap.get("user_id"));
-		user.setUserName((String) resultMap.get("user_name"));
-		user.setPassword((String) resultMap.get("password"));
-		user.setBirthday((Date) resultMap.get("birthday"));
-		user.setAge((Integer) resultMap.get("age"));
-		user.setMarriage((Boolean) resultMap.get("marriage"));
-		user.setRole((String) resultMap.get("role"));
-
-		return user;
+		return namedJdbcTemplate.queryForObject(sql, params, rowMapper);
 	}
 
 	@Override
 	public List<User> selectMany() throws DataAccessException {
-		SqlParameterSource params = new MapSqlParameterSource();
-		List<Map<String, Object>> getList = namedJdbcTemplate.queryForList(readSqlfile("findAll.sql"), params);
+		String sql = JdbcUtil.createSqlString("findAll.sql");
+		RowMapper<User> rowMapper = new UserRowMapper();
 
-		List<User> userList = new ArrayList<>();
-		for (Map<String, Object> resultMap : getList) {
-			userList.add(generateUser(resultMap));
-		}
-
-		return userList;
+		return namedJdbcTemplate.query(sql, rowMapper);
 	}
 
 	@Override
 	public int updateOne(User user) throws DataAccessException {
-		// TODO 自動生成されたメソッド・スタブ
-		return 0;
+		return namedJdbcTemplate.update(JdbcUtil.createSqlString("namedUpdate.sql"), getUpdateParam(user));
+	}
+
+	private SqlParameterSource getUpdateParam(User user) {
+		return new MapSqlParameterSource()
+				.addValue("userId", user.getUserId())
+				.addValue("password", user.getPassword())
+				.addValue("userName", user.getUserName())
+				.addValue("birthday", user.getBirthday())
+				.addValue("age", user.getAge())
+				.addValue("marriage", user.isMarriage());
 	}
 
 	@Override
 	public int deleteOne(String userId) throws DataAccessException {
-		// TODO 自動生成されたメソッド・スタブ
-		return 0;
+		String sql = JdbcUtil.createSqlString("namedDelete.sql");
+		SqlParameterSource params = new MapSqlParameterSource().addValue("userId", userId);
+
+		return namedJdbcTemplate.update(sql, params);
 	}
 
 	@Override
 	public void userCsvOut() throws DataAccessException {
-		// TODO 自動生成されたメソッド・スタブ
+		String sql = JdbcUtil.createSqlString("findAll.sql");
 
-	}
+		UserRowCallbackHandler handler = new UserRowCallbackHandler();
 
-	private String readSqlfile(String fileName) {
+		namedJdbcTemplate.query(sql, handler);
 
-		StringBuilder sb = new StringBuilder();
-		String path = "sql/" + fileName;
-
-		try (InputStream is = new ClassPathResource(path).getInputStream();
-				BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-
-			String sql;
-			while ((sql = br.readLine()) != null) {
-				sb.append(sql);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return sb.toString();
 	}
 
 }
