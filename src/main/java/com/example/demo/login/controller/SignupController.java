@@ -61,6 +61,14 @@ public class SignupController {
 		return "login/signup";
 	}
 
+	/**
+	 * ユーザー登録処理
+	 *
+	 * @param form
+	 * @param result
+	 * @param model
+	 * @return
+	 */
 	@PostMapping("/signup")
 	public String postSignUp(@ModelAttribute @Validated SignupForm form, BindingResult result, Model model) {
 
