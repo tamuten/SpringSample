@@ -5,10 +5,13 @@ import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -79,7 +82,13 @@ public class SignupController {
 
 		System.out.println(form);
 
-		boolean insertResult = userService.insert(createUserBean(form));
+		// ユーザーオブジェクトに詰め替え
+		User user = new User();
+		BeanUtils.copyProperties(form, user);
+		// 権限を設定
+		user.setRole(ROLE_GENERAL);
+
+		boolean insertResult = userService.insert(user);
 
 		if (insertResult) {
 			System.out.println("insert成功");
@@ -91,13 +100,22 @@ public class SignupController {
 		return "redirect:/login";
 	}
 
-	private User createUserBean(SignupForm form) {
-		User user = new User();
-		BeanUtils.copyProperties(form, user);
-		user.setRole(ROLE_GENERAL);
+	@ExceptionHandler(DataAccessException.class)
+	public String dataAccessExceptionHandler(DataAccessException e, Model model) {
+		model.addAttribute("error", "内部サーバーエラー（DB)：ExceptionHandler");
+		model.addAttribute("message", "SignupControllerでDataAccessExceptionが発生しました");
+		model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR);
 
-		return user;
+		return "error";
+	}
 
+	@ExceptionHandler(Exception.class)
+	public String exceptionHandler(Exception e, Model model) {
+		model.addAttribute("error", "内部サーバーエラー：ExceptionHandler");
+		model.addAttribute("message", "SignupControllerでExceptionが発生しました");
+		model.addAttribute("status", HttpStatus.INTERNAL_SERVER_ERROR);
+
+		return "error";
 	}
 
 }
