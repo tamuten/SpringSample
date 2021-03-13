@@ -18,28 +18,28 @@ import lombok.Data;
 @Data
 public class SignupForm {
 
-	@NotBlank
-	@Email
+	@NotBlank(groups = ValidGroup1.class)
+	@Email(groups = ValidGroup2.class)
 	private String userId;
 
-	@NotBlank
-	@Length(min = 4, max = 100)
-	@Pattern(regexp = "^[a-zA-Z0-9]+$")
+	@NotBlank(groups = ValidGroup1.class)
+	@Length(min = 4, max = 100, groups = ValidGroup2.class)
+	@Pattern(regexp = "^[a-zA-Z0-9]+$", groups = ValidGroup3.class)
 	private String password;
 
-	@NotBlank
+	@NotBlank(groups = ValidGroup1.class)
 	private String userName;
 
-	@NotNull
+	@NotNull(groups = ValidGroup1.class)
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	private Date birthday;
 
-	@Min(20)
-	@Max(100)
-	private Integer age;
+	@Min(value = 20, groups = ValidGroup2.class)
+	@Max(value = 100, groups = ValidGroup2.class)
+	private int age;
 
-	//falseのみ可能
-	@AssertFalse
+	//falseのみ可
+	@AssertFalse(groups = ValidGroup2.class)
 	private boolean marriage;
 
 }

@@ -17,6 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+	//	@Autowired
+	//	private DataSource dataSource;
+
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		// 静的リソースを除外
@@ -36,15 +39,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.anyRequest().authenticated(); // それ以外は直リンク禁止
 
 		// ログイン処理
-		http.formLogin().loginProcessingUrl("/login")// ログイン処理のパス
-				.loginPage("/login")//ログインページの指定
-				.failureUrl("/login")// ログイン失敗時の遷移先
-				.usernameParameter("userId")// ログインページのユーザーID
-				.passwordParameter("password")// ログインページのパスワード
-				.defaultSuccessUrl("/home", true);//ログイン成功後の遷移先
+		http.formLogin()
+				.loginProcessingUrl("/login")
+				.loginPage("/login")
+				.failureUrl("/login")
+				.usernameParameter("userId")
+				.passwordParameter("password")
+				.defaultSuccessUrl("/home", true);
 
 		// CSRF対策を無効に設定（一時的）
 		http.csrf().disable();
 	}
+
+	//	@Override
+	//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+	//		// ログイン処理時のユーザー情報をDBから取得する
+	//		auth.jdbcAuthentication()
+	//				.dataSource(dataSource)
+	//				.usersByUsernameQuery(JdbcUtil.createSqlString("findUserIdAndPassword.sql"))
+	//				.authoritiesByUsernameQuery(JdbcUtil.createSqlString("getUserRole.sql"));
+	//	}
 
 }

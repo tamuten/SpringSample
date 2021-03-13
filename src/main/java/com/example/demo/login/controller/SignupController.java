@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.demo.login.domain.model.GroupOrder;
 import com.example.demo.login.domain.model.SignupForm;
 import com.example.demo.login.domain.model.User;
 import com.example.demo.login.domain.service.UserService;
@@ -73,7 +74,8 @@ public class SignupController {
 	 * @return
 	 */
 	@PostMapping("/signup")
-	public String postSignUp(@ModelAttribute @Validated SignupForm form, BindingResult result, Model model) {
+	public String postSignUp(@ModelAttribute @Validated(GroupOrder.class) SignupForm form, BindingResult result,
+			Model model) {
 
 		if (result.hasErrors()) {
 
