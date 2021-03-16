@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.login.domain.model.User;
@@ -19,6 +20,9 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Autowired
 	protected JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	protected PasswordEncoder passwordEncoder;
 
 	/** 全件取得SQL */
 	protected static final String SELECT_ALL = "SELECT * FROM m_user";
@@ -34,7 +38,10 @@ public class UserDaoJdbcImpl implements UserDao {
 
 	@Override
 	public int insertOne(User user) throws DataAccessException {
-		return jdbcTemplate.update(createInsertOneSql(), createInsertOneParam(user));
+		String sql = createInsertOneSql();
+		Object[] param = createInsertOneParam(user);
+
+		return jdbcTemplate.update(sql, param);
 	}
 
 	/**
@@ -64,10 +71,11 @@ public class UserDaoJdbcImpl implements UserDao {
 	 * @return パラメータ
 	 */
 	private Object[] createInsertOneParam(User user) {
+		String password = passwordEncoder.encode(user.getPassword());
 		List<Object> param = new ArrayList<>();
 
 		param.add(user.getUserId());
-		param.add(user.getPassword());
+		param.add(password);
 		param.add(user.getUserName());
 		param.add(user.getBirthday());
 		param.add(user.getAge());
@@ -144,9 +152,10 @@ public class UserDaoJdbcImpl implements UserDao {
 	}
 
 	private Object[] createUpdateParam(User user) {
+		String password = passwordEncoder.encode(user.getPassword());
 		List<Object> param = new ArrayList<>();
 
-		param.add(user.getPassword());
+		param.add(password);
 		param.add(user.getUserName());
 		param.add(user.getBirthday());
 		param.add(user.getAge());
