@@ -1,4 +1,5 @@
 /* 従業員テーブルのデータ */
+truncate table employee;
 insert into employee (
 	employee_id,
 	employee_name,
@@ -11,6 +12,7 @@ values(
 );
 
 /* ユーザーマスタのデータ（アドミン権限） */
+truncate table m_user;
 INSERT INTO m_user(user_id, password,
  user_name, birthday, age, marriage, role)
  VALUES ('yamada@xxx.co.jp', '$2a$10$xRTXvpMWly0oGiu65WZlm.3YL95LGVV2ASFjDhe6WF4.Qji1huIPa', '山田太郎', '1990-01-01', 28, false, 'ROLE_ADMIN');
