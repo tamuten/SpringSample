@@ -1,8 +1,0 @@
-com.example.demo
-com.example.demo.login.aspect
-com.example.demo.login.controller
-com.example.demo.login.domain.model
-com.example.demo.login.domain.repository
-com.example.demo.login.domain.repository.jdbc
-com.example.demo.login.domain.service
-com.example.demo.trySpring
